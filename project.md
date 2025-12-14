@@ -138,7 +138,61 @@ print("Recovered correctly?:", decoded == message)
 Recovered message: [0, 0, 1, 1]
 Recovered correctly?: True
 ```
+# Step 7: Visuals
+To enchance readilbity quantum circuit diagram has been added 
 
+# Code
+```
+def bits_str(x): 
+    return "".join(map(str, x))
+
+def draw_flow(message, key, rx, corrected, decoded, flip, index):
+    fig, ax = plt.subplots(figsize=(14, 3.8))
+    ax.set_title(f"Generated message = {bits_str(message)}   |   Decoded = {bits_str(decoded)}", fontsize=16)
+
+    rows = [
+        ("Original (4)",  message,   [0,1,2,3]),
+        ("Encoded (7)",   key,       [0,1,2,3,4,5,6]),
+        ("Received (7)",  rx,        [0,1,2,3,4,5,6]),
+        ("Corrected (7)", corrected, [0,1,2,3,4,5,6]),
+        ("Decoded (4)",   decoded,   [0,1,2,3]),
+    ]
+
+    y = [4,3,2,1,0]
+
+    for (name, bits, xs), yy in zip(rows, y):
+        ax.text(-1.7, yy, f"{name}: {bits_str(bits)}", fontsize=13, va="center")
+        for x, b in zip(xs, bits):
+            ax.text(x, yy, str(b), ha="center", va="center",
+                    bbox=dict(boxstyle="circle,pad=0.35", fc="lightgray", ec="black"))
+
+    # mark flipped in received
+    if flip is not None:
+        ax.scatter([flip], [2], s=900, facecolors="none", edgecolors="red", linewidths=3)
+        ax.text(flip, 1.55, "flipped", color="red", ha="center", fontsize=11)
+
+    # mark detected in corrected
+    if index is not None:
+        ax.scatter([index], [1], s=900, facecolors="none", edgecolors="green", linewidths=3)
+        ax.text(index, 0.55, "detected", color="green", ha="center", fontsize=11)
+
+    ax.set_xlim(-1.8, 6.5)
+    ax.set_ylim(-0.6, 4.6)
+    ax.set_xticks(range(7))
+    ax.set_yticks([])
+    ax.grid(axis="x", color="0.9")
+    plt.tight_layout()
+    plt.show()
+
+draw_flow(message, key, rx, corrected, decoded, flip, index)
+
+circuit_drawer(qc, output="mpl")
+fig.savefig("quantum.png", dpi=200, bbox_inches="tight")
+plt.show()
+```
+
+
+<img width="2850" height="887" alt="key_flow_visual" src="https://github.com/user-attachments/assets/c88fac1f-133f-40c9-b92b-33215fa4b3af" />
 
 
 
